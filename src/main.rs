@@ -9,7 +9,7 @@ fn main() -> Result<()> {
     let socket = UdpSocket::bind("[::1]:34000").expect("Couldn't bind to localhost:34000");
     println!("Socket bound");
 
-    // socket.set_read_timeout(Some(Duration::new(1, 0))).unwrap();
+    socket.set_read_timeout(Some(Duration::new(1, 0))).unwrap();
 
     socket
         .join_multicast_v6(
@@ -29,15 +29,13 @@ fn main() -> Result<()> {
         println!("Sent message");
 
         let mut buf = [0u8; 1400];
-        let (mut number_of_bytes, mut src_addr) =
-            socket.recv_from(&mut buf).expect("Unable to receive");
-        println!("{:?}", number_of_bytes);
-        while number_of_bytes > 0 {
-            let bytes = &buf[..number_of_bytes];
-            println!("{:?}: {:?}", src_addr, bytes);
-            (number_of_bytes, src_addr) = socket.recv_from(&mut buf).expect("Unable to receive");
-        }
 
-        sleep(Duration::new(1, 0));
+        match socket.recv_from(&mut buf) {
+            Ok((number_of_bytes, src_addr)) => {
+                let bytes = &buf[..number_of_bytes];
+                println!("{:?}: {:?}", src_addr, bytes);
+            }
+            Err(_) => println!("No bytes"),
+        }
     }
 }
