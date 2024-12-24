@@ -7,7 +7,7 @@ use std::{
 
 fn main() -> Result<()> {
     let multicast_addr =
-        SocketAddrV6::new(Ipv6Addr::new(0xff05, 0, 0, 0, 0, 0, 0, 0x100), 34000, 0, 0);
+        SocketAddrV6::new(Ipv6Addr::new(0xff02, 0, 0, 0, 0, 0, 0, 0x100), 34000, 0, 0);
 
     let socket = UdpSocket::bind("[::1]:34000").expect("Couldn't bind to localhost:34000");
     println!("Socket bound");
@@ -16,7 +16,7 @@ fn main() -> Result<()> {
 
     socket
         .join_multicast_v6(
-            &"ff05::100".parse().expect("Multicast address was invalid"),
+            &"ff02::100".parse().expect("Multicast address was invalid"),
             0,
         )
         .expect("Unable to join multicast group");
