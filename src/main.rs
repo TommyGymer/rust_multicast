@@ -9,7 +9,9 @@ fn main() -> Result<()> {
     let multicast_addr =
         SocketAddrV6::new(Ipv6Addr::new(0xff02, 0, 0, 0, 0, 0, 0, 0x100), 34000, 0, 0);
 
-    let socket = UdpSocket::bind("[::1]:34000").expect("Couldn't bind to localhost:34000");
+    let local: SocketAddrV6 = "[::]:34000".parse::<SocketAddrV6>().unwrap();
+
+    let socket = UdpSocket::bind(local).expect("Couldn't bind to localhost:34000");
     println!("Socket bound");
 
     socket.set_read_timeout(Some(Duration::new(1, 0))).unwrap();
@@ -22,6 +24,10 @@ fn main() -> Result<()> {
         .expect("Unable to join multicast group");
     println!("Joined multicast group");
 
+    // socket
+    //    .set_multicast_loop_v6(true)
+    //    .expect("Unable to set multicast loop");
+
     loop {
         socket
             .send_to(b"testing", multicast_addr)
@@ -33,7 +39,8 @@ fn main() -> Result<()> {
         match socket.recv_from(&mut buf) {
             Ok((number_of_bytes, src_addr)) => {
                 let bytes = &buf[..number_of_bytes];
-                println!("{:?}: {:?}", src_addr, bytes);
+                println!("{:?}: {:?}", src_addr, String::from_utf8(bytes.to_vec()));
+                sleep(Duration::new(1, 0));
             }
             Err(_) => println!("No bytes"),
         }
