@@ -23,9 +23,9 @@ fn main() -> Result<()> {
         .expect("Unable to join multicast group");
     println!("Joined multicast group");
 
-    // socket
-    //    .set_multicast_loop_v6(true)
-    //    .expect("Unable to set multicast loop");
+    socket
+        .set_multicast_loop_v6(false)
+        .expect("Unable to set multicast loop");
 
     loop {
         socket
