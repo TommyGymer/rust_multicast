@@ -12,18 +12,23 @@ fn main() -> Result<()> {
 
     socket
         .join_multicast_v6(
-            &"ff01::100".parse().expect("Multicast address was invalid"),
+            &"ff02::100".parse().expect("Multicast address was invalid"),
             0,
         )
         .expect("Unable to join multicast group");
 
     let multicast_addr =
-        SocketAddrV6::new(Ipv6Addr::new(65281, 0, 0, 0, 0, 0, 0, 256), 34001, 0, 0);
+        SocketAddrV6::new(Ipv6Addr::new(65282, 0, 0, 0, 0, 0, 0, 256), 34000, 0, 0);
 
     loop {
         socket
             .send_to(b"testing", multicast_addr)
             .expect("Unable to send");
+
+        let mut buf = [0u8; 1400];
+        socket.recv_from(&mut buf).expect("Unable to receive");
+        println!("{:?}", buf);
+
         sleep(Duration::new(1, 0));
     }
 }
