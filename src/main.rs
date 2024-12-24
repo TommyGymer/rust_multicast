@@ -1,7 +1,6 @@
 use color_eyre::Result;
 use std::{
     net::{Ipv6Addr, SocketAddrV6, UdpSocket},
-    thread::sleep,
     time::Duration,
 };
 
@@ -36,13 +35,9 @@ fn main() -> Result<()> {
 
         let mut buf = [0u8; 1400];
 
-        match socket.recv_from(&mut buf) {
-            Ok((number_of_bytes, src_addr)) => {
-                let bytes = &buf[..number_of_bytes];
-                println!("{:?}: {:?}", src_addr, String::from_utf8(bytes.to_vec()));
-                sleep(Duration::new(1, 0));
-            }
-            Err(_) => println!("No bytes"),
+        while let Ok((number_of_bytes, src_addr)) = socket.recv_from(&mut buf) {
+            let bytes = &buf[..number_of_bytes];
+            println!("{:?}: {:?}", src_addr, String::from_utf8(bytes.to_vec()));
         }
     }
 }
