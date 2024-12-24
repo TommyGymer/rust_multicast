@@ -26,8 +26,13 @@ fn main() -> Result<()> {
             .expect("Unable to send");
 
         let mut buf = [0u8; 1400];
-        socket.recv_from(&mut buf).expect("Unable to receive");
-        println!("{:?}", buf);
+        let (mut number_of_bytes, mut src_addr) =
+            socket.recv_from(&mut buf).expect("Unable to receive");
+        while number_of_bytes > 0 {
+            let bytes = &buf[..number_of_bytes];
+            println!("{:?}: {:?}", src_addr, bytes);
+            (number_of_bytes, src_addr) = socket.recv_from(&mut buf).expect("Unable to receive");
+        }
 
         sleep(Duration::new(1, 0));
     }
